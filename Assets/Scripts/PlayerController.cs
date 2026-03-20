@@ -14,6 +14,7 @@ public class PlayerController : MonoBehaviour
     private Rigidbody rb;
     private InputAction jumpAction;
     private bool isOnGround = true;
+    private bool isCanAirJump = true;
 
     private Animator playerAnim;
     private AudioSource playerAudio;
@@ -40,14 +41,35 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (jumpAction.triggered && isOnGround && !gameOver)
+        if (jumpAction.triggered && gameOver == false)
+        {
+            if (isOnGround)
+            {
+                rb.AddForce(jumpForce * Vector3.up, ForceMode.Impulse);
+                isOnGround = false;
+                playerAnim.SetTrigger("Jump_trig");
+                dirtParticle.Stop();
+                playerAudio.PlayOneShot(jumpSfx);
+            }
+            else if (isCanAirJump)
+            {
+                isCanAirJump = false;
+                rb.AddForce(jumpForce * Vector3.up, ForceMode.Impulse);
+                isOnGround = false;
+                playerAnim.SetTrigger("Jump_trig");
+                dirtParticle.Stop();
+                playerAudio.PlayOneShot(jumpSfx);
+            }
+        }
+
+        /*if (jumpAction.triggered && isOnGround && !gameOver)
         {
             rb.AddForce(jumpForce * Vector3.up, ForceMode.Impulse);
             isOnGround = false;
             playerAnim.SetTrigger("Jump_trig");
             dirtParticle.Stop();
             playerAudio.PlayOneShot(jumpSfx);
-        }
+        }*/
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -55,6 +77,7 @@ public class PlayerController : MonoBehaviour
         if (collision.gameObject.CompareTag("Ground"))
         {
             isOnGround = true;
+            isCanAirJump = true;
             dirtParticle.Play();
         }
         else if (collision.gameObject.CompareTag("Obstacle"))

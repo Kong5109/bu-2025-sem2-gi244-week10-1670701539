@@ -6,6 +6,7 @@ public class PlayerController : MonoBehaviour
     public float jumpForce;
     public float gravityModifier;
     public ParticleSystem explosionParticle;
+    public ParticleSystem hitParticle;
     public ParticleSystem dirtParticle;
 
     public AudioClip jumpSfx;
@@ -20,7 +21,8 @@ public class PlayerController : MonoBehaviour
     private AudioSource playerAudio;
 
     public bool gameOver = false;
-
+    public bool isPlayerDashing = false;
+    //public int hp = 3;
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
@@ -41,7 +43,8 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (jumpAction.triggered && gameOver == false)
+        if (gameOver == true) { return; }
+        if (jumpAction.triggered)
         {
             if (isOnGround)
             {
@@ -61,6 +64,17 @@ public class PlayerController : MonoBehaviour
                 playerAudio.PlayOneShot(jumpSfx);
             }
         }
+
+        if (Keyboard.current.shiftKey.isPressed)
+        {
+            isPlayerDashing = true;
+        }
+        else
+        {
+            isPlayerDashing = false;
+        }
+
+
 
         /*if (jumpAction.triggered && isOnGround && !gameOver)
         {
